@@ -110,6 +110,28 @@ export class CalendarComponent {
     return startOfWeek;
   }
 
+  updateWeek(selectedDate: Date): void {
+    const currentDay = selectedDate.getDay(); // 0 (Sunday) to 6 (Saturday)
+
+    this.startOfWeek = new Date(selectedDate);
+    this.startOfWeek.setDate(selectedDate.getDate() - currentDay); // Set to the first day of the week (Sunday)
+
+    this.endOfWeek = new Date(selectedDate);
+    this.endOfWeek.setDate(selectedDate.getDate() + (6 - currentDay)); // Set to the last day of the week (Saturday)
+  }
+
+  onPreviousWeek(): void {
+    const previousWeek = new Date(this.startOfWeek);
+    previousWeek.setDate(this.startOfWeek.getDate() - 7); // Move back by 7 days
+    this.updateWeek(previousWeek);
+  }
+
+  onNextWeek(): void {
+    const nextWeek = new Date(this.startOfWeek);
+    nextWeek.setDate(this.startOfWeek.getDate() + 7); // Move forward by 7 days
+    this.updateWeek(nextWeek);
+  }
+
   prevWeek() {
     this.currentDate.setDate(this.currentDate.getDate() - 7);
     this.initializeHourSlots();
