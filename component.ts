@@ -23,15 +23,13 @@ export class CalendarComponent {
   }
 
   initializeHourSlots() {
-    this.hourSlots = []; // Clear existing hour slots
-
     const startOfWeek = this.getStartOfWeek(this.currentDate);
-
+  
     for (let day = 0; day < 7; day++) {
       const currentDate = new Date(startOfWeek);
       currentDate.setDate(startOfWeek.getDate() + day);
       const currentDayEvents = this.calendarService.getEventsForDate(this.events, currentDate);
-
+  
       for (let hour = 0; hour < 24; hour++) {
         for (let minute = 0; minute < 60; minute += 15) {
           this.hourSlots.push({
