@@ -1,0 +1,25 @@
+<div class="calendar">
+    <button (click)="previousWeek()">Previous Week</button>
+    <button (click)="nextWeek()">Next Week</button>
+    <div class="week-header">
+      <div class="empty-header"></div>
+      <div class="day-date-header" *ngFor="let day of weekDays; let i = index">
+        <div class="week-date">{{ dayOfMonths[i] }}</div>
+        <div class="week-day">{{ day }}</div>
+      </div>
+    </div>
+    <div class="calendar-content">
+      <div class="hour-slot" *ngFor="let slot of hourSlots; let i = index">
+        <div class="time">{{ slot.hour }}:{{ slot.minute | number: '2.0' }}</div>
+        <div class="day-slot" *ngFor="let day of weekDays; let j = index">
+          <div class="event" *ngFor="let event of slot.events">
+            <span *ngIf="j === 0">{{ weekDates[i] }}</span>
+            <span *ngIf="j === 1">{{ weekDates[i + 1] }}</span>
+            <!-- Add similar spans for the other days -->
+            {{ event.name }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
