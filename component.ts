@@ -66,6 +66,12 @@ export class CalendarComponent {
     });
   }
 
+  getDayOfMonth(index: number): string {
+    const currentDate = new Date(this.currentDate);
+    currentDate.setDate(currentDate.getDate() + index);
+    return currentDate.getDate().toString();
+  }
+
   getShortWeekDays(): string[] {
     const weekDays = Object.keys(DayOfWeek).filter(day => isNaN(Number(day)));
     return weekDays.map(day => day.substr(0, 3));
