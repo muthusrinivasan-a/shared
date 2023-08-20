@@ -11,7 +11,7 @@ import { Event, TimeSlot } from './models';
 export class CalendarComponent {
   currentDate: Date = new Date();
   weekDays: string[] = this.getShortWeekDays();
-  hourSlots: TimeSlot[] = [];
+  hourSlots: TimeSlot[][] = [];
   events: Event[] = [
     { name: 'Event 1', start: new Date(2023, 6, 27, 10, 15), end: new Date(2023, 6, 27, 11, 30) },
     { name: 'Event 2', start: new Date(2023, 6, 27, 13, 0), end: new Date(2023, 6, 27, 14, 45) }
@@ -22,29 +22,56 @@ export class CalendarComponent {
     this.initializeHourSlots();
   }
 
-  initializeHourSlots() {
-    const startOfWeek = this.getStartOfWeek(this.currentDate);
+  // initializeHourSlots() {
+  //   const startOfWeek = this.getStartOfWeek(this.currentDate);
   
+  //   for (let day = 0; day < 7; day++) {
+  //     const currentDate = new Date(startOfWeek);
+  //     currentDate.setDate(startOfWeek.getDate() + day);
+  //     const currentDayEvents = this.calendarService.getEventsForDate(this.events, currentDate);
+  
+  //     for (let hour = 0; hour < 24; hour++) {
+  //       for (let minute = 0; minute < 60; minute += 15) {
+  //         this.hourSlots.push({
+  //           date: new Date(currentDate),
+  //           hour,
+  //           minute,
+  //           events: this.getEventsForSlot(currentDayEvents, currentDate, hour, minute)
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
+
+  initializeDayTimeSlots() {
+    const startOfWeek = this.getStartOfWeek(this.currentDate);
+
     for (let day = 0; day < 7; day++) {
       const currentDate = new Date(startOfWeek);
       currentDate.setDate(startOfWeek.getDate() + day);
-      const currentDayEvents = this.calendarService.getEventsForDate(this.events, currentDate);
-  
+
+      const daySlots: TimeSlot[] = [];
+
       for (let hour = 0; hour < 24; hour++) {
         for (let minute = 0; minute < 60; minute += 15) {
-          this.hourSlots.push({
-            date: new Date(currentDate),
-            hour,
-            minute,
-            events: this.getEventsForSlot(currentDayEvents, currentDate, hour, minute)
-          });
+          const eventsForSlot = this.getEventsForSlot(currentDate, hour, minute);
+          if (eventsForSlot.length > 0) {
+            daySlots.push({
+              date: new Date(currentDate),
+              hour,
+              minute,
+              events: eventsForSlot
+            });
+          }
         }
       }
+
+      this.dayTimeSlots.push(daySlots);
     }
   }
 
 
-  getEventsForSlot(events: Event[], date: Date, hour: number, minute: number): Event[] {
+  getEventsForSlot(date: Date, hour: number, minute: number): Event[] {
     const slotStart = new Date(date);
     slotStart.setHours(hour, minute, 0, 0);
   
