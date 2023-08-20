@@ -127,4 +127,25 @@ export class CalendarComponent {
   
     return eventStart >= currentTime;
   }
+
+  calculateEventHeight(event: Event): number {
+    const eventStart = new Date(event.start);
+    const eventEnd = new Date(event.end);
+    const eventDuration = (eventEnd.getTime() - eventStart.getTime()) / (15 * 60 * 1000); // Convert to 15-minute slots
+    return eventDuration * 30; // 30 pixels per 15-minute slot
+  }
+  
+  calculateEventTop(event: Event): number {
+    const eventStart = new Date(event.start);
+    const currentTime = new Date(eventStart);
+    currentTime.setHours(eventStart.getHours(), eventStart.getMinutes(), 0, 0);
+    const slotDuration = 15; // Time slot duration in minutes (15-minute slots)
+    const minutesFromSlotStart = (eventStart.getTime() - currentTime.getTime()) / (15 * 60 * 1000); // Convert to 15-minute slots
+    return minutesFromSlotStart * 30; // 30 pixels per 15-minute slot
+  }
+  
+  calculateEventLeft(slot: TimeSlot): number {
+    const slotDuration = 15; // Time slot duration in minutes (15-minute slots)
+    return slotDuration * slot.minute / 15 * 30; // 30 pixels per 15-minute slot
+  }
 }

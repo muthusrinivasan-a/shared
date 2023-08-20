@@ -10,7 +10,10 @@
     <div class="hour-slot" *ngFor="let slot of hourSlots; let i = index">
       <div class="time">{{ slot.hour }}:{{ slot.minute | number: '2.0' }}</div>
       <div class="day-slot" *ngFor="let day of weekDays; let j = index">
-        <div class="event" *ngFor="let event of slot.events">
+        <div class="event" *ngFor="let event of slot.events" [style.height.px]="calculateEventHeight(event)"
+        [style.top.px]="calculateEventTop(event)"
+        [style.left.px]="calculateEventLeft(slot)"
+        [class.multi-day]="splitEventAcrossDays(event, slot)">
           {{ event.name }}
         </div>
       </div>
