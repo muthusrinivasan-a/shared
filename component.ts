@@ -10,7 +10,7 @@ import { Event, TimeSlot } from './models';
 })
 export class CalendarComponent {
   currentDate: Date = new Date();
-  weekDays: string[] = Object.keys(DayOfWeek).filter(day => isNaN(Number(day)));
+  weekDays: string[] = this.getShortWeekDays(); // Use short weekday names
   hourSlots: TimeSlot[] = [];
   events: Event[] = [
     // Sample events data
@@ -49,5 +49,11 @@ export class CalendarComponent {
     this.hourSlots.forEach(slot => {
       slot.events = this.calendarService.getEventsForSlot(this.events, slot.hour, slot.minute);
     });
+  }
+
+  // Get short weekday names
+  getShortWeekDays(): string[] {
+    const weekDays = Object.keys(DayOfWeek).filter(day => isNaN(Number(day)));
+    return weekDays.map(day => day.substr(0, 3)); // Use the first 3 characters for short names
   }
 }
