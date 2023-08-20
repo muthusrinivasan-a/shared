@@ -23,6 +23,8 @@ export class CalendarComponent {
   }
 
   initializeHourSlots() {
+    this.hourSlots = []; // Clear existing hour slots
+
     const startOfWeek = this.getStartOfWeek(this.currentDate);
 
     for (let day = 0; day < 7; day++) {
@@ -42,6 +44,7 @@ export class CalendarComponent {
       }
     }
   }
+
 
   getEventsForSlot(events: Event[], hour: number, minute: number): Event[] {
     const slotStart = new Date();
@@ -72,5 +75,15 @@ export class CalendarComponent {
     const startOfWeek = new Date(date);
     startOfWeek.setDate(date.getDate() - date.getDay());
     return startOfWeek;
+  }
+
+  prevWeek() {
+    this.currentDate.setDate(this.currentDate.getDate() - 7);
+    this.initializeHourSlots();
+  }
+
+  nextWeek() {
+    this.currentDate.setDate(this.currentDate.getDate() + 7);
+    this.initializeHourSlots();
   }
 }
