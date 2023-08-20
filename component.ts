@@ -119,4 +119,12 @@ export class CalendarComponent {
     this.currentDate.setDate(this.currentDate.getDate() + 7);
     this.initializeHourSlots();
   }
+
+  showEvent(event: Event, slot: TimeSlot): boolean {
+    const eventStart = new Date(event.start);
+    const currentTime = new Date(slot.date);
+    currentTime.setHours(slot.hour, slot.minute, 0, 0);
+  
+    return eventStart >= currentTime;
+  }
 }
