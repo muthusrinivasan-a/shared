@@ -36,7 +36,7 @@ export class CalendarComponent {
             date: new Date(currentDate),
             hour,
             minute,
-            events: this.getEventsForSlot(currentDayEvents, hour, minute)
+            events: this.getEventsForSlot(currentDayEvents, currentDate, hour, minute)
           });
         }
       }
@@ -44,16 +44,17 @@ export class CalendarComponent {
   }
 
 
-  getEventsForSlot(events: Event[], hour: number, minute: number): Event[] {
-    const slotStart = new Date();
+  getEventsForSlot(events: Event[], date: Date, hour: number, minute: number): Event[] {
+    const slotStart = new Date(date);
     slotStart.setHours(hour, minute, 0, 0);
-
-    const slotEnd = new Date();
+  
+    const slotEnd = new Date(date);
     slotEnd.setHours(hour, minute + 15, 0, 0);
-
+  
     return events.filter(event => {
       const eventStart = new Date(event.start);
       const eventEnd = new Date(event.end);
+  
       return (
         eventStart >= slotStart && eventStart < slotEnd
       ) || (
@@ -63,6 +64,7 @@ export class CalendarComponent {
       );
     });
   }
+  
 
   getDayOfMonth(index: number): string {
     const currentDate = new Date(this.currentDate);
