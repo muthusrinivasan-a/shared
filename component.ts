@@ -170,4 +170,19 @@ export class CalendarComponent {
     const slotDuration = 15; // Time slot duration in minutes (15-minute slots)
     return slotDuration * slot.minute / 15 * 30; // 30 pixels per 15-minute slot
   }
+
+  generateCalendar(startMonth: number) {
+    this.months = [];
+    for (let i = startMonth; i < startMonth + 3; i++) {
+      const monthName = this.getMonthName(i);
+      const daysInMonth = new Date(new Date().getFullYear(), i + 1, 0).getDate();
+      const dates = Array.from({ length: daysInMonth }, (_, idx) => {
+        const date = idx + 1;
+        // Simulating events for demonstration
+        const events = this.generateRandomEvents(); // You need to implement this function
+        return { date, events };
+      });
+      this.months.push({ name: monthName, dates: dates });
+    }
+  }
 }
