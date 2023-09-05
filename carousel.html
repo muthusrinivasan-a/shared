@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        outline: 0;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 30px auto;
+      }
+
+      .carousel-container {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        padding: 30px;
+      }
+
+      .carousel-items {
+        display: flex;
+        transition: transform 0.5s;
+      }
+
+      .carousel-item {
+        flex: 0 0 100%;
+        min-height: 200px;
+        border: 1px solid #ccc;
+        margin-right: 30px;
+      }
+
+      .one {
+        background-color: yellow;
+      }
+
+      .two {
+        background-color: red;
+      }
+
+      .three {
+        background-color: green;
+      }
+
+      .four {
+        background-color: black;
+      }
+
+      #prev,
+      #next {
+        cursor: pointer;
+        padding: 10px;
+        background-color: #333;
+        color: #fff;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1;
+      }
+
+      #prev {
+        left: 0;
+      }
+
+      #next {
+        right: 0;
+      }
+
+      #prev.disabled,
+      #next.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="carousel-container">
+        <button id="prev" onclick="prevSlide()">Previous</button>
+        <div class="carousel-items">
+          <div class="carousel-item one">Item 1</div>
+          <div class="carousel-item two">Item 2</div>
+          <div class="carousel-item three">Item 3</div>
+          <div class="carousel-item four">Item 4</div>
+        </div>
+        <button id="next" onclick="nextSlide()">Next</button>
+      </div>
+    </div>
+
+    <script>
+      const container = document.querySelector(".carousel-container");
+      const items = document.querySelector(".carousel-items");
+      const prevButton = document.getElementById("prev");
+      const nextButton = document.getElementById("next");
+      const itemWidth = document.querySelector(".carousel-item").offsetWidth + 30;
+      let currentIndex = 0;
+
+      function updateButtons() {
+        if (currentIndex === 0) {
+          prevButton.classList.add("disabled");
+        } else {
+          prevButton.classList.remove("disabled");
+        }
+
+        if (currentIndex === items.children.length - 1) {
+          nextButton.classList.add("disabled");
+        } else {
+          nextButton.classList.remove("disabled");
+        }
+      }
+
+      function prevSlide() {
+        if (currentIndex > 0) {
+          currentIndex--;
+          updateCarousel();
+        }
+      }
+
+      function nextSlide() {
+        if (currentIndex < items.children.length - 1) {
+          currentIndex++;
+          updateCarousel();
+        }
+      }
+
+      function updateCarousel() {
+        const translateX = -currentIndex * itemWidth;
+        items.style.transform = `translateX(${translateX}px)`;
+        updateButtons();
+      }
+
+      updateButtons();
+    </script>
+  </body>
+</html>
