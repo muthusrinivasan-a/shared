@@ -1,0 +1,7 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Rewrite /api to empty before proxying
+    RewriteRule ^api/(.*)$ http://20.196.7.120/$1 [P,L]
+</IfModule>
