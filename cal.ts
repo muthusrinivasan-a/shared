@@ -17,6 +17,36 @@
     return datesArray;
   }
 
+generateDates(year: number, month: number): Date[] {
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  const datesArray: Date[] = [];
+
+  // Generate dates for the previous month's leftover days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const currentDate = new Date(year, month, -i);
+    datesArray.push(currentDate);
+  }
+
+  // Generate dates for the current month
+  for (let i = 1; i <= lastDay; i++) {
+    const currentDate = new Date(year, month, i);
+    datesArray.push(currentDate);
+  }
+
+  // Generate dates for the next month's days
+  const nextMonth = month === 11 ? 0 : month + 1;
+  const nextYear = month === 11 ? year + 1 : year;
+  const nextMonthDays = 42 - datesArray.length; // Total days in a 6-week calendar
+  for (let i = 1; i <= nextMonthDays; i++) {
+    const currentDate = new Date(nextYear, nextMonth, i);
+    datesArray.push(currentDate);
+  }
+
+  return datesArray;
+}
+
+
   // Function to check if a date has an event
   hasEvent(date: Date): boolean {
     return this.events.some(
