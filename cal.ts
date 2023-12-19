@@ -46,6 +46,39 @@ generateDates(year: number, month: number): Date[] {
   return datesArray;
 }
 
+getUpcomingEvents(events) {
+  if (events.length === 0) {
+    // No events in the list
+    return "No events available";
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set time to start of the day
+
+  const upcomingEvents = events
+    .filter(event => new Date(event) >= today) // Filter past events
+    .sort((a, b) => new Date(a) - new Date(b)); // Sort events in ascending order
+
+  if (upcomingEvents.length === 0) {
+    // No upcoming events
+    return "No upcoming events";
+  }
+
+  return upcomingEvents.map(event => {
+    const eventDate = new Date(event);
+    const timeDiff = eventDate.getTime() - today.getTime();
+    const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Calculate days left
+    return { eventDate: event, daysLeft };
+  });
+}
+
+// In your component
+upcomingEventsMessage: string | any[];
+
+// When fetching events
+this.upcomingEventsMessage = this.eventService.getUpcomingEvents(eventsArray);
+
+// In your HTML template, you can check the type of 'upcomingEventsMessage' and display accordingly
 
   // Function to check if a date has an event
   hasEvent(date: Date): boolean {
