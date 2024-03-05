@@ -1,0 +1,47 @@
+.dropdown {
+  position: relative;
+  display: inline-block;
+
+  &.top .dropdown-content {
+    bottom: 100%;
+  }
+
+  .dropdown-btn {
+    cursor: pointer;
+    user-select: none; // Prevent text selection
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5); // Accessibility: Visible focus indicator
+    }
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    overflow-y: auto; // Make dropdown scrollable if it exceeds max height
+    max-height: 300px; // Example max-height, you can adjust or make it dynamic
+
+    div {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+
+      &:hover {
+        background-color: #f1f1f1;
+      }
+    }
+
+    input[type="text"] {
+      width: 100%; // Ensure search box uses full width of dropdown
+      padding: 10px;
+      margin: 5px 0;
+      box-sizing: border-box; // Include padding and border in the element's total width and height
+    }
+  }
+}
