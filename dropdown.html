@@ -1,0 +1,10 @@
+<div class="dropdown" [ngClass]="{'top': isDropdownTop}" [attr.aria-haspopup]="true" [attr.aria-expanded]="isDropdownOpen">
+  <div class="dropdown-btn" (click)="toggleDropdown()" tabindex="0" aria-label="Select items">Select Items</div>
+  <div class="dropdown-content" *ngIf="isDropdownOpen" [style.max-height]="maxHeight" role="listbox">
+    <input *ngIf="showSearch" type="text" (input)="filterItems($event)" placeholder="Search..." aria-label="Search items">
+    <div *ngFor="let item of filteredItems; trackBy: trackByFn" role="option" [attr.aria-selected]="selectedItems.has(item.id)">
+      <input type="checkbox" [id]="item.id" [value]="item.name" (change)="onItemSelect($event, item)" [checked]="selectedItems.has(item.id)">
+      <label [for]="item.id">{{item.name}}</label>
+    </div>
+  </div>
+</div>
