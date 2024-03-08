@@ -72,7 +72,31 @@ export class MultiSelectDropdownComponent implements OnInit {
   }
 }
 
+/* 
 
+import { Component, HostListener } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  showSidebar: boolean = true;
+
+  constructor() {
+    this.checkScreenSize(window.innerWidth);
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.checkScreenSize((event.target as Window).innerWidth);
+  }
+
+  private checkScreenSize(width: number) {
+    this.showSidebar = width >= 1300;
+  }
+}
 
 /* OLD */
 /* import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
