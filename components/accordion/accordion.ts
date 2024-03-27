@@ -1,4 +1,3 @@
-// bootstrap-accordion.tsx
 import { Component, h, Element, Prop, State } from '@stencil/core';
 
 @Component({
@@ -44,8 +43,8 @@ export class BootstrapAccordion {
             return (
               <div class={`accordion-item ${this.openItems.includes(index) ? 'open' : ''}`} role="presentation">
                 {Array.from(child.children).map(innerChild => {
-                  if (innerChild.tagName === 'H2' && innerChild.classList.contains('accordion-header')) {
-                    return (
+                  return (
+                    innerChild.tagName === 'H2' && innerChild.classList.contains('accordion-header') ? (
                       <h2 class="accordion-header" role="tab">
                         <button
                           class="accordion-button"
@@ -55,12 +54,10 @@ export class BootstrapAccordion {
                           aria-controls={`accordion-content-${index}`}
                           disabled={this.disabled}
                         >
-                          {innerChild.textContent}
+                          {innerChild.innerHTML}
                         </button>
                       </h2>
-                    );
-                  } else if (innerChild.tagName === 'DIV' && innerChild.classList.contains('accordion-collapse')) {
-                    return (
+                    ) : innerChild.tagName === 'DIV' && innerChild.classList.contains('accordion-collapse') ? (
                       <div
                         class="accordion-collapse"
                         role="tabpanel"
@@ -69,11 +66,11 @@ export class BootstrapAccordion {
                         style={{ display: this.openItems.includes(index) ? 'block' : 'none' }}
                       >
                         <div class="accordion-body">
-                          <slot name={`accordion-item-${index}`}></slot>
+                          {Array.from(innerChild.children).map(contentChild => contentChild)}
                         </div>
                       </div>
-                    );
-                  }
+                    ) : null
+                  );
                 })}
               </div>
             );
@@ -83,6 +80,25 @@ export class BootstrapAccordion {
     );
   }
 }
+
+<bootstrap-accordion default-open="0" multi-open="true">
+  <div class="accordion-item">
+    <h2 class="accordion-header">Header 1</h2>
+    <div class="accordion-collapse">
+      <div class="accordion-body">
+        Content for Header 1
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header">Header 2</h2>
+    <div class="accordion-collapse">
+      <div class="accordion-body">
+        Content for Header 2
+      </div>
+    </div>
+  </div>
+</bootstrap-accordion>
 
 <bootstrap-accordion default-open="0" multi-open="true">
   <div class="accordion-item">
