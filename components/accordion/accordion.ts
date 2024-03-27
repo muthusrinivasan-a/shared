@@ -69,7 +69,7 @@ export class BootstrapAccordion {
                         style={{ display: this.openItems.includes(index) ? 'block' : 'none' }}
                       >
                         <div class="accordion-body">
-                          {innerChild.innerHTML}
+                          <slot name={`accordion-item-${index}`}></slot>
                         </div>
                       </div>
                     );
@@ -84,6 +84,24 @@ export class BootstrapAccordion {
   }
 }
 
+<bootstrap-accordion default-open="0" multi-open="true">
+  <div class="accordion-item">
+    <h2 class="accordion-header">Header 1</h2>
+    <div class="accordion-collapse">
+      <div class="accordion-body">
+        <slot name="accordion-item-0"></slot>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header">Header 2</h2>
+    <div class="accordion-collapse">
+      <div class="accordion-body">
+        <slot name="accordion-item-1"></slot>
+      </div>
+    </div>
+  </div>
+</bootstrap-accordion>
 
 
 <bootstrap-accordion default-open="0" multi-open="true">
