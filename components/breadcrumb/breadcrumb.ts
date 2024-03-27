@@ -6,8 +6,11 @@ import { Component, h, Prop, State } from '@stencil/core';
   shadow: true,
 })
 export class BreadcrumbComponent {
-  @Prop() items: { text: string; url?: string; disabled?: boolean }[]; // Updated prop definition
-  @State() activeIndex: number = -1; // State to store the index of the active breadcrumb item
+ // @Prop() items: { text: string; url?: string; disabled?: boolean }[]; // Updated prop definition
+ // @State() activeIndex: number = -1; // State to store the index of the active breadcrumb item
+
+   @Prop() items: { text: string; url?: string; disabled?: boolean }[] = []; // Initialize with an empty array
+  @State() activeIndex: number = -1;
 
   handleClick(index: number, event: Event) {
     if (this.items[index].disabled) {
