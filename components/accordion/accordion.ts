@@ -10,7 +10,7 @@ export class BootstrapAccordion {
   @Prop() multiOpen: boolean = false; // Whether multiple items can be opened simultaneously
   @Prop() disabled: boolean = false; // Whether accordion is disabled
 
-  @Element() hostElement: HTMLElement;
+  @Element() host: HTMLElement;
 
   @State() openItems: number[] = []; // Array to store indices of open items
 
@@ -38,14 +38,11 @@ export class BootstrapAccordion {
   render() {
     return (
       <div class="accordion" role="tablist">
-        {Array.from(this.hostElement.children).map((child, index) => {
+        {Array.from(this.host.children).map((child, index) => {
           if (child.tagName === 'DIV' && child.classList.contains('accordion-item')) {
             return (
-              <div
-                class={`accordion-item ${this.openItems.includes(index) ? 'open' : ''}`}
-                role="presentation"
-              >
-                {Array.from(child.children).map((innerChild, innerIndex) => {
+              <div class={`accordion-item ${this.openItems.includes(index) ? 'open' : ''}`} role="presentation">
+                {Array.from(child.children).map(innerChild => {
                   if (innerChild.tagName === 'H2' && innerChild.classList.contains('accordion-header')) {
                     return (
                       <h2 class="accordion-header" role="tab">
@@ -71,24 +68,21 @@ export class BootstrapAccordion {
                         style={{ display: this.openItems.includes(index) ? 'block' : 'none' }}
                       >
                         <div class="accordion-body">
-                          {innerChild.textContent}
+                          {innerChild.innerHTML}
                         </div>
                       </div>
                     );
-                  } else {
-                    return null;
                   }
                 })}
               </div>
             );
-          } else {
-            return null;
           }
         })}
       </div>
     );
   }
 }
+
 
 
 <bootstrap-accordion default-open="0" multi-open="true">
