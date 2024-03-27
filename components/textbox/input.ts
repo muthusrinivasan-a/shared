@@ -14,10 +14,11 @@ export class FormTextbox {
   @Prop() readonly: boolean;
   @Prop() disabled: boolean;
   @Prop() isError: boolean;
-  @Prop() isSuccess: boolean; // New property for success state
+  @Prop() isSuccess: boolean;
   @Prop() pattern: string;
   @Prop() sizeVariant: 'large' | 'small' | 'xl' = 'large';
   @Prop() type: 'text' | 'password' = 'text';
+  @Prop() isRequired: boolean; // Custom property for required validation
 
   @Event() valueChange: EventEmitter<string>;
 
@@ -25,8 +26,11 @@ export class FormTextbox {
     const target = event.target as HTMLInputElement;
     const value = target.value;
 
-    // Perform validation based on regex pattern
-    if (this.pattern && !new RegExp(this.pattern).test(value)) {
+    // Check if field is required and empty
+    if (this.isRequired && !value.trim()) {
+      this.isError = true;
+      this.isSuccess = false;
+    } else if (this.pattern && !new RegExp(this.pattern).test(value)) {
       this.isError = true;
       this.isSuccess = false;
     } else {
@@ -67,6 +71,7 @@ export class FormTextbox {
 }
 
 
+
 /* Angular */
 <form-textbox 
   label="Password" 
@@ -80,6 +85,7 @@ export class FormTextbox {
   [pattern]="passwordPattern" 
   sizeVariant="large" 
   type="password" 
+    [required]="true"
   (valueChange)="onPasswordChange($event)"
 ></form-textbox>
 
