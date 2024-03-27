@@ -1,3 +1,11 @@
+
+
+  renderHTML(htmlString: string) {
+    const range = document.createRange();
+    const fragment = range.createContextualFragment(htmlString);
+    return fragment;
+  }
+
 // bootstrap-accordion.tsx
 import { Component, h, Element, Prop, State } from '@stencil/core';
 
