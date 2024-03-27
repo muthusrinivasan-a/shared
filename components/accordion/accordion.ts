@@ -1,4 +1,4 @@
-import { Component, h, Prop, State } from '@stencil/core';
+import { Component, h, Prop, State, Element } from '@stencil/core';
 
 @Component({
   tag: 'bootstrap-accordion',
@@ -9,6 +9,8 @@ export class BootstrapAccordion {
   @Prop() defaultOpen: number = -1; // Index of item to be opened by default (-1 means none)
   @Prop() multiOpen: boolean = false; // Whether multiple items can be opened simultaneously
   @Prop() disabled: boolean = false; // Whether accordion is disabled
+
+  @Element() hostElement: HTMLElement;
 
   @State() openItems: number[] = []; // Array to store indices of open items
 
@@ -36,7 +38,7 @@ export class BootstrapAccordion {
   render() {
     return (
       <div class="accordion" role="tablist">
-        {Array.from(this.host.children).map((child, index) => {
+        {Array.from(this.hostElement.children).map((child, index) => {
           if (child.tagName === 'DIV' && child.classList.contains('accordion-item')) {
             return (
               <div
@@ -87,6 +89,7 @@ export class BootstrapAccordion {
     );
   }
 }
+
 
 <bootstrap-accordion default-open="0" multi-open="true">
   <div class="accordion-item">
