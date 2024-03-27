@@ -8,7 +8,7 @@ import { Component, EventEmitter, Output, Prop, h } from '@stencil/core';
   shadow: true
 })
 export class CheckboxComponent {
-  @Prop() label: string;
+ @Prop() label: string;
   @Prop() value: string;
   @Prop() required: boolean = false;
   @Prop() error: string = '';
@@ -21,11 +21,12 @@ export class CheckboxComponent {
 
   render() {
     const errorId = this.error ? `${this.value}-error` : null;
+    const checkboxId = `${this.value}-checkbox`;
 
     return (
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" aria-label={this.label} aria-required={this.required} required={this.required} onChange={this.handleChange.bind(this)} aria-describedby={errorId} />
-        <label class="form-check-label">{this.label}</label>
+        <input id={checkboxId} class="form-check-input" type="checkbox" aria-label={this.label} aria-required={this.required} required={this.required} onChange={this.handleChange.bind(this)} aria-describedby={errorId} />
+        <label class="form-check-label" htmlFor={checkboxId}>{this.label}</label>
         {this.error && <div class="invalid-feedback" id={errorId}>{this.error}</div>}
       </div>
     );
