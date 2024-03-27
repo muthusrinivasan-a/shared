@@ -36,7 +36,7 @@ export class BootstrapAccordion {
   render() {
     return (
       <div class="accordion" role="tablist">
-        {Array.from(this.el.children).map((child, index) => {
+        {Array.from(this.host.children).map((child, index) => {
           if (child.tagName === 'DIV' && child.classList.contains('accordion-item')) {
             return (
               <div
@@ -87,7 +87,6 @@ export class BootstrapAccordion {
     );
   }
 }
-
 
 <bootstrap-accordion default-open="0" multi-open="true">
   <div class="accordion-item">
