@@ -45,3 +45,18 @@ export class BreadcrumbComponent {
     );
   }
 }
+
+
+
+/* 
+
+<breadcrumb-component
+  items={[
+    { text: 'Home', url: '/home' },
+    { text: 'Library', url: '/library' },
+    { text: 'Data', disabled: true }, // Example of a disabled breadcrumb
+    { text: 'Current Page' },
+  ]}
+></breadcrumb-component>
+
+*/
