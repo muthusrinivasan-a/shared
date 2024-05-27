@@ -8,8 +8,15 @@ function consolidateData() {
   // Create an array to hold the consolidated data
   var result = [];
 
-  // Create a unique ID generator function
-  var generateId = (function() {
+  // Create unique ID generators
+  var generateParentId = (function() {
+    var id = 1;
+    return function() {
+      return id++;
+    };
+  })();
+
+  var generateChildId = (function() {
     var id = 1;
     return function() {
       return id++;
@@ -18,12 +25,13 @@ function consolidateData() {
 
   // Create a helper function to add child objects
   function addChild(parent, childTitle) {
+    if (!childTitle) return; // Skip if childTitle is null or empty
     if (!parent.child) {
       parent.child = [];
     }
     if (!parent.child.some(child => child.title === childTitle)) {
       parent.child.push({
-        id: generateId(),
+        id: generateChildId(),
         title: childTitle,
         isOpen: false
       });
@@ -35,13 +43,15 @@ function consolidateData() {
     var parentTitle = row[0]; // First column
     var childTitle = row[1]; // Second column
     
+    if (!parentTitle) return; // Skip if parentTitle is null or empty
+
     // Check if the parent already exists in the result array
     var parent = result.find(item => item.title === parentTitle);
     
     if (!parent) {
       // Create a new parent object if it doesn't exist
       parent = {
-        id: generateId(),
+        id: generateParentId(),
         title: parentTitle,
         isOpen: true,
         child: []
