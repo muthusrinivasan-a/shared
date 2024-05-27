@@ -8,15 +8,8 @@ function consolidateData() {
   // Create an array to hold the consolidated data
   var result = [];
 
-  // Create unique ID generators
+  // Create a unique ID generator for parents
   var generateParentId = (function() {
-    var id = 1;
-    return function() {
-      return id++;
-    };
-  })();
-
-  var generateChildId = (function() {
     var id = 1;
     return function() {
       return id++;
@@ -28,10 +21,12 @@ function consolidateData() {
     if (!childTitle) return; // Skip if childTitle is null or empty
     if (!parent.child) {
       parent.child = [];
+      parent.childCounter = 1; // Initialize child counter for the parent
     }
     if (!parent.child.some(child => child.title === childTitle)) {
+      var childId = parent.id + "." + parent.childCounter++;
       parent.child.push({
-        id: generateChildId(),
+        id: childId,
         title: childTitle,
         isOpen: false
       });
@@ -54,7 +49,8 @@ function consolidateData() {
         id: generateParentId(),
         title: parentTitle,
         isOpen: true,
-        child: []
+        child: [],
+        childCounter: 1 // Initialize child counter
       };
       result.push(parent);
     }
