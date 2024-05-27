@@ -1,0 +1,60 @@
+function consolidateData() {
+  // Get the active sheet
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  
+  // Get all the data from the sheet
+  var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).getValues();
+
+  // Create an array to hold the consolidated data
+  var result = [];
+
+  // Create a unique ID generator function
+  var generateId = (function() {
+    var id = 1;
+    return function() {
+      return id++;
+    };
+  })();
+
+  // Create a helper function to add child objects
+  function addChild(parent, childTitle) {
+    if (!parent.child) {
+      parent.child = [];
+    }
+    if (!parent.child.some(child => child.title === childTitle)) {
+      parent.child.push({
+        id: generateId(),
+        title: childTitle,
+        isOpen: false
+      });
+    }
+  }
+
+  // Iterate through the data
+  data.forEach(function(row) {
+    var parentTitle = row[0]; // First column
+    var childTitle = row[1]; // Second column
+    
+    // Check if the parent already exists in the result array
+    var parent = result.find(item => item.title === parentTitle);
+    
+    if (!parent) {
+      // Create a new parent object if it doesn't exist
+      parent = {
+        id: generateId(),
+        title: parentTitle,
+        isOpen: true,
+        child: []
+      };
+      result.push(parent);
+    }
+    
+    // Add the child to the parent
+    addChild(parent, childTitle);
+  });
+  
+  // Log the result object to see the output
+  Logger.log(JSON.stringify(result, null, 2));
+  
+  return result; // Return the result object
+}
