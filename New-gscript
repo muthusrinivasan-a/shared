@@ -64,3 +64,115 @@ function consolidateData() {
   
   return result; // Return the result object
 }
+
+
+function consolidateData() {
+  // Get the active sheet
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  
+  // Get all the data from the sheet, starting from the second row
+  var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).getValues();
+
+  // Create an array to hold the consolidated data
+  var result = [];
+
+  // Create a unique ID generator for parents
+  var generateParentId = (function() {
+    var id = 1;
+    return function() {
+      return id++;
+    };
+  })();
+
+  // Create a helper function to add child objects
+  function addChild(parent, childTitle, rowData) {
+    if (!childTitle) return; // Skip if childTitle is null or empty
+    if (!parent.child) {
+      parent.child = [];
+      parent.childCounter = 1; // Initialize child counter for the parent
+    }
+    if (!parent.child.some(child => child.title === childTitle)) {
+      var childId = parent.id + "." + parent.childCounter++;
+      parent.child.push({
+        id: childId,
+        title: childTitle,
+        isOpen: false,
+        epic: [] // Initialize the epic array
+      });
+    } else {
+      // If the child already exists, append the row data to the epic array
+      var child = parent.child.find(child => child.title === childTitle);
+      child.epic.push(rowData);
+    }
+  }
+
+  // Iterate through the data
+  data.forEach(function(row) {
+    var parentTitle = row[0]; // First column
+    var childTitle = row[1]; // Second column
+    
+    if (!parentTitle) return; // Skip if parentTitle is null or empty
+
+    // Check if the parent already exists in the result array
+    var parent = result.find(item => item.title === parentTitle);
+    
+    if (!parent) {
+      // Create a new parent object if it doesn't exist
+      parent = {
+        id: generateParentId(),
+        title: parentTitle,
+        isOpen: true,
+        child: [],
+        childCounter: 1 // Initialize child counter
+      };
+      result.push(parent);
+    }
+    
+    // Add the child to the parent
+    addChild(parent, childTitle, row);
+  });
+  
+  // Log the result object to see the output
+  Logger.log(JSON.stringify(result, null, 2));
+  
+  return result; // Return the result object
+}
+
+function checkAndAppendData() {
+  // Get the active spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Open another sheet tab for comparison
+  var comparisonSheet = ss.getSheetByName('ComparisonSheetName'); // Replace with your sheet name
+  
+  // Get all the data from the comparison sheet
+  var comparisonData = comparisonSheet.getRange(2, 1, comparisonSheet.getLastRow() - 1, comparisonSheet.getLastColumn()).getValues();
+  
+  // Consolidate data from the main sheet
+  var consolidatedData = consolidateData();
+  
+  // Iterate through the comparison data
+  comparisonData.forEach(function(row) {
+    var comparisonParentTitle = row[0]; // First column in comparison sheet
+    var comparisonChildTitle = row[1]; // Second column in comparison sheet
+    
+    // Check if the parent exists in the consolidated data
+    var parent = consolidatedData.find(item => item.title === comparisonParentTitle);
+    
+    if (parent) {
+      // Check if the child exists under the parent
+      var child = parent.child.find(c => c.title === comparisonChildTitle);
+      
+      if (child) {
+        // Append the row data to the child's epic array
+        child.epic.push(row);
+      }
+    }
+  });
+  
+  // Log the updated consolidated data to see the output
+  Logger.log(JSON.stringify(consolidatedData, null, 2));
+  
+  return consolidatedData; // Return the updated result object
+}
+
