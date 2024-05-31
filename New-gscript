@@ -1,3 +1,37 @@
+
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'searchFilter'
+})
+export class SearchFilterPipe implements PipeTransform {
+
+  transform(items: { title: string, age: number }[], searchTerm: string): { title: string, age: number }[] {
+    if (!items || !searchTerm) {
+      return items;
+    }
+
+    searchTerm = searchTerm.toLowerCase();
+
+    return items
+      .filter(item => item.title.toLowerCase().includes(searchTerm))
+      .sort((a, b) => {
+        const aIncludes = a.title.toLowerCase().includes(searchTerm);
+        const bIncludes = b.title.toLowerCase().includes(searchTerm);
+        if (aIncludes && !bIncludes) {
+          return -1;
+        } else if (!aIncludes && bIncludes) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+  }
+
+}
+
+
+
 import { Component } from '@angular/core';
 
 @Component({
