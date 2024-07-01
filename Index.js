@@ -8,12 +8,15 @@ const app = express();
 const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(session({ secret: 'your-secret-key', resave: true, saveUninitialized: true }));
+app.use(session({ secret: 'your-session-secret', resave: true, saveUninitialized: true }));
+
+// Read the client secret JSON file
+const clientSecret = JSON.parse(fs.readFileSync('client_secret.json')).web;
 
 const oauth2Client = new google.auth.OAuth2(
-  'YOUR_CLIENT_ID',
-  'YOUR_CLIENT_SECRET',
-  'YOUR_REDIRECT_URL'
+  clientSecret.client_id,
+  clientSecret.client_secret,
+  clientSecret.redirect_uris[0]
 );
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
