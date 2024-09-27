@@ -1,0 +1,205 @@
+To create a simple micro frontend (MFE) application using module federation, you can follow these steps:
+
+### 1. Set Up the Host Application (Angular/React)
+
+#### Angular as Host:
+- Create an Angular project using the Angular CLI:
+  ```bash
+  ng new mfe-host --routing
+  ```
+- Install the required dependencies:
+  ```bash
+  npm install @angular-architects/module-federation
+  ```
+- Configure `module-federation.config.js` in the root of your host Angular app:
+  ```js
+  const { shareAll, withModuleFederationPlugin } = require('@angular-architects/module-federation/webpack');
+
+  module.exports = withModuleFederationPlugin({
+    name: 'host',
+    remotes: {
+      mfe1: 'mfe1@http://localhost:3000/remoteEntry.js',
+      mfe2: 'mfe2@http://localhost:3001/remoteEntry.js',
+    },
+    shared: shareAll({
+      singleton: true,
+      strictVersion: true,
+    }),
+  });
+  ```
+- Import the remote child applications in `AppModule` or `AppRoutingModule`:
+  ```typescript
+  const routes: Routes = [
+    {
+      path: 'mfe1',
+      loadChildren: () =>
+        loadRemoteModule({
+          type: 'module',
+          remoteEntry: 'http://localhost:3000/remoteEntry.js',
+          exposedModule: './Module',
+        }).then((m) => m.YourMfeModule),
+    },
+    {
+      path: 'mfe2',
+      loadChildren: () =>
+        loadRemoteModule({
+          type: 'module',
+          remoteEntry: 'http://localhost:3001/remoteEntry.js',
+          exposedModule: './Module',
+        }).then((m) => m.YourMfeModule),
+    },
+  ];
+  ```
+
+#### React as Host:
+- Create a new React app using `create-react-app` or another React setup:
+  ```bash
+  npx create-react-app mfe-host
+  ```
+- Install webpack module federation dependencies:
+  ```bash
+  npm install webpack webpack-cli html-webpack-plugin --save-dev
+  ```
+- Set up module federation in `webpack.config.js`:
+  ```js
+  const HtmlWebpackPlugin = require('html-webpack-plugin');
+  const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
+
+  module.exports = {
+    mode: 'development',
+    devServer: {
+      port: 3002,
+    },
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: './public/index.html',
+      }),
+      new ModuleFederationPlugin({
+        name: 'host',
+        remotes: {
+          mfe1: 'mfe1@http://localhost:3000/remoteEntry.js',
+          mfe2: 'mfe2@http://localhost:3001/remoteEntry.js',
+        },
+      }),
+    ],
+  };
+  ```
+- Import remote modules in React using `dynamic import`:
+  ```jsx
+  const Mfe1App = React.lazy(() => import('mfe1/App'));
+  const Mfe2App = React.lazy(() => import('mfe2/App'));
+
+  function App() {
+    return (
+      <Suspense fallback={<div>Loading...</div>}>
+        <Mfe1App />
+        <Mfe2App />
+      </Suspense>
+    );
+  }
+  ```
+
+### 2. Set Up the Angular Child Application (MFE)
+
+- Create a new Angular project for MFE:
+  ```bash
+  ng new mfe1 --routing
+  ```
+- Install `@angular-architects/module-federation` and configure it similarly to the host app:
+  ```bash
+  npm install @angular-architects/module-federation
+  ```
+- Add the remote configuration in `module-federation.config.js`:
+  ```js
+  const { shareAll, withModuleFederationPlugin } = require('@angular-architects/module-federation/webpack');
+
+  module.exports = withModuleFederationPlugin({
+    name: 'mfe1',
+    exposes: {
+      './Module': './src/app/your-module/your-module.module.ts',
+    },
+    shared: shareAll(),
+  });
+  ```
+- Expose a module or component in the `exposes` section, and then build and serve your application:
+  ```bash
+  ng serve --port 3000
+  ```
+
+### 3. Set Up the React Child Application (MFE)
+
+- Create another React app:
+  ```bash
+  npx create-react-app mfe2
+  ```
+- Add module federation support in `webpack.config.js`:
+  ```js
+  const HtmlWebpackPlugin = require('html-webpack-plugin');
+  const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
+
+  module.exports = {
+    mode: 'development',
+    devServer: {
+      port: 3001,
+    },
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: './public/index.html',
+      }),
+      new ModuleFederationPlugin({
+        name: 'mfe2',
+        exposes: {
+          './App': './src/App',
+        },
+        shared: { react: { singleton: true }, 'react-dom': { singleton: true } },
+      }),
+    ],
+  };
+  ```
+
+### 4. Example of Passing Data from Angular to React
+
+You can pass data between micro frontends using shared services, RxJS, or global stores (like Redux in React or services in Angular). Here’s a basic example:
+
+#### Angular (Host or MFE):
+- Create a shared Angular service that stores the data:
+  ```typescript
+  @Injectable({
+    providedIn: 'root',
+  })
+  export class SharedService {
+    private dataSubject = new BehaviorSubject<any>(null);
+    public data$ = this.dataSubject.asObservable();
+
+    sendData(data: any) {
+      this.dataSubject.next(data);
+    }
+  }
+  ```
+
+#### React (MFE):
+- Use a global store or context to listen to data changes:
+  ```jsx
+  import React, { useEffect, useState } from 'react';
+
+  function App() {
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+      // Listen to shared data changes from Angular app
+      const subscription = window.angularSharedService.data$.subscribe((newData) => {
+        setData(newData);
+      });
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    }, []);
+
+    return <div>{data ? `Received data: ${data}` : 'No data received'}</div>;
+  }
+
+  export default App;
+  ```
+
+With these steps, you can create a micro frontend architecture where data flows from an Angular host or MFE to a React MFE.
