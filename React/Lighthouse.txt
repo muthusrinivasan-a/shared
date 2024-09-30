@@ -1,0 +1,9 @@
+Optimize Images
+
+Minimize JavaScript
+Reduce JavaScript Bundle Size: Split large JavaScript bundles using techniques like code splitting to reduce the amount of JS loaded on the initial page.
+Defer or Async JavaScript: Use defer or async attributes on scripts to prevent them from blocking page rendering.
+Tree Shaking: Remove unused JavaScript code from your bundles to reduce the overall size of the scripts.
+Minify JavaScript: Use minification tools like Terser to remove unnecessary characters (like spaces, new lines) from the JS code, making it smaller and faster to download.
+
+Reduce CSS Size
