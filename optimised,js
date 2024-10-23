@@ -1,0 +1,155 @@
+Memoization: Uses useCallback and useMemo to optimize event handlers and expensive computations.
+Lazy Loading: Components and images are lazy-loaded using React.lazy and Suspense, improving initial load times.
+Debouncing and Throttling: Optimizes event handlers (e.g., scroll, search input) to prevent unnecessary executions.
+Batched State Updates: Prevents multiple re-renders by using batched state updates.
+
+Performance Improvements:
+Memoization (useCallback, useMemo):
+
+Avoids unnecessary re-renders and recomputations, reducing the overall JavaScript execution time.
+Debouncing and Throttling:
+
+Limits the number of times event handlers are executed (e.g., scroll events, input changes), improving Total Blocking Time (TBT) and First Input Delay (FID).
+Lazy Loading:
+
+Defers loading of non-essential components and images until they are needed, improving Largest Contentful Paint (LCP) and Speed Index.
+Batched State Updates:
+
+Reduces unnecessary re-renders by grouping state updates, resulting in better performance and reduced Total Blocking Time (TBT).
+Unique Keys and React.memo:
+
+Using unique keys in lists and React.memo prevents unnecessary re-renders for list items, improving the efficiency of rendering large datasets.
+These examples allow you to clearly compare the performance differences between an unoptimized and optimized React app using tools like Lighthouse and React Profiler.
+
+import React, { useState, useMemo, useCallback, lazy, Suspense } from 'react';
+import { debounce, throttle } from './utils';
+
+// Lazy load large components (code splitting)
+const LazyLoadedImage = lazy(() => import('./LazyLoadedImage'));
+
+// List of items component with keys and React.memo
+const ItemList = React.memo(({ items }) => {
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.id}>{item.name}</li>  {/* Use stable and unique keys */}
+      ))}
+    </ul>
+  );
+});
+
+function OptimizedApp() {
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState('John');
+  const [query, setQuery] = useState('');
+  const [scrollY, setScrollY] = useState(0);
+  const [items] = useState([
+    { id: 1, name: 'Item One' },
+    { id: 2, name: 'Item Two' },
+    { id: 3, name: 'Item Three' },
+  ]);
+
+  // Memoizing function to prevent unnecessary re-renders
+  const handleClick = useCallback(() => {
+    setCount((prevCount) => prevCount + 1);
+    setName('Doe');
+  }, []);
+
+  // Debounced search input handler
+  const handleSearch = useCallback(
+    debounce((e) => {
+      setQuery(e.target.value);
+      console.log('Search query:', e.target.value);  // Only logs after debounce delay
+    }, 500),  // Delay for debouncing
+    []
+  );
+
+  // Throttle scroll event handler
+  const handleScroll = useCallback(
+    throttle(() => {
+      setScrollY(window.scrollY);
+      console.log('ScrollY:', window.scrollY);  // Throttles scroll event
+    }, 1000),  // Throttle interval (1 second)
+    []
+  );
+
+  // Add scroll event listener
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [handleScroll]);
+
+  // Memoize expensive calculation
+  const expensiveComputation = useMemo(() => {
+    return count * 1000;
+  }, [count]);
+
+  return (
+    <div>
+      <h1>Optimized React App</h1>
+      <p>Count: {count}</p>
+      <p>Expensive Computation: {expensiveComputation}</p>
+      <p>Name: {name}</p>
+      <p>Scroll Position: {scrollY}px</p>
+
+      {/* Debounced search input */}
+      <input
+        type="text"
+        placeholder="Search..."
+        onChange={handleSearch}
+      />
+
+      {/* Lazy loading images */}
+      <Suspense fallback={<p>Loading images...</p>}>
+        <LazyLoadedImage src="large-image.webp" alt="Large Optimized" />
+        <LazyLoadedImage src="another-large-image.webp" alt="Another Large Optimized" />
+      </Suspense>
+
+      {/* Optimized list with keys */}
+      <ItemList items={items} />
+
+      {/* Click handler with memoization */}
+      <button onClick={handleClick}>Click me</button>
+    </div>
+  );
+}
+
+export default OptimizedApp;
+
+
+import React from 'react';
+
+// Optimized with lazy loading and WebP image format
+const LazyLoadedImage = ({ src, alt }) => {
+  return <img src={src} alt={alt} loading="lazy" />;
+};
+
+export default LazyLoadedImage;
+
+
+// Debounce function: Delays the execution of a function until a specified delay has passed
+export function debounce(func, wait) {
+  let timeout;
+  return function (...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Throttle function: Ensures the function is called at most once in a specified interval
+export function throttle(func, limit) {
+  let inThrottle;
+  return function (...args) {
+    if (!inThrottle) {
+      func(...args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+}
