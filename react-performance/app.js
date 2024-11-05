@@ -1,15 +1,13 @@
-// src/App.js
-
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
-import './App.css';
-
-const OptimizedComponent = lazy(() => import('./components/OptimizedComponent/OptimizedComponent'));
-const UnoptimizedComponent = lazy(() => import('./components/UnoptimizedComponent/UnoptimizedComponent'));
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import captureWebVitals from './reportWebVitals';
+import OptimizedComponent from './components/OptimizedComponent/OptimizedComponent';
+import UnoptimizedComponent from './components/UnoptimizedComponent/UnoptimizedComponent';
 
 function App() {
   return (
     <Router>
+      <PageChangeHandler />
       <header className="app-header">
         <h1>React Performance Optimization</h1>
         <nav>
@@ -18,15 +16,36 @@ function App() {
         </nav>
       </header>
       <main className="app-content">
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<OptimizedComponent />} />
-            <Route path="/unoptimized" element={<UnoptimizedComponent />} />
-          </Routes>
-        </Suspense>
+        <Routes>
+          <Route path="/" element={<OptimizedComponent />} />
+          <Route path="/unoptimized" element={<UnoptimizedComponent />} />
+        </Routes>
       </main>
     </Router>
   );
+}
+
+// Component to handle page changes and capture Web Vitals
+function PageChangeHandler() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Callback function to handle each metric
+    const handleMetric = (metric) => {
+      console.log(metric);
+      // Optionally send the metric to an analytics endpoint
+      // fetch('/analytics', {
+      //   method: 'POST',
+      //   body: JSON.stringify(metric),
+      //   headers: { 'Content-Type': 'application/json' },
+      // });
+    };
+
+    // Capture Web Vitals on page load and every route change
+    captureWebVitals(handleMetric);
+  }, [location]); // Runs every time the location (route) changes
+
+  return null;
 }
 
 export default App;
