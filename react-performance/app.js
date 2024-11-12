@@ -49,3 +49,44 @@ function PageChangeHandler() {
 }
 
 export default App;
+
+
+
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+
+function App() {
+    const location = useLocation();
+
+    const reportWebVitals = () => {
+        const sendToGoogleAnalytics = ({ name, delta, id }) => {
+            window.gtag('event', name, {
+                event_category: 'Web Vitals',
+                event_label: id,
+                value: Math.round(name === 'CLS' ? delta * 1000 : delta),
+                non_interaction: true,
+            });
+        };
+
+        getCLS(sendToGoogleAnalytics);
+        getFID(sendToGoogleAnalytics);
+        getFCP(sendToGoogleAnalytics);
+        getLCP(sendToGoogleAnalytics);
+        getTTFB(sendToGoogleAnalytics);
+    };
+
+    useEffect(() => {
+        // Report Web Vitals each time the route changes
+        reportWebVitals();
+    }, [location.pathname]); // Depend on location.pathname to trigger on every route change
+
+    return (
+        <div>
+            {/* Your main app components and routing setup */}
+        </div>
+    );
+}
+
+export default App;
+
