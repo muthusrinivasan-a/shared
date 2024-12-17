@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trumbowyg Inline Font Sizes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/trumbowyg@2.27.3/dist/ui/trumbowyg.min.css">
+</head>
+<body>
+    <h2>Trumbowyg Editor with Inline Font Sizes</h2>
+    <textarea id="editor"></textarea>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.27.3/dist/trumbowyg.min.js"></script>
+
+    <script>
+        // Extend Trumbowyg to include font size options
+        $.extend(true, $.trumbowyg, {
+            langs: {
+                en: {
+                    fontSize: 'Font Size',
+                    small: 'Small',
+                    medium: 'Medium',
+                    large: 'Large',
+                    xlarge: 'Extra Large'
+                }
+            }
+        });
+
+        // Define font size options with inline styles
+        $.trumbowyg.btnsDef.fontSize = {
+            dropdown: ['small', 'medium', 'large', 'xlarge'],
+            ico: 'pencil'
+        };
+
+        // Apply inline styles
+        $.trumbowyg.btnsDef.small = {
+            fn: function () { this.execCmd('insertHTML', false, '<span style="font-size: 12px;">' + this.range.text() + '</span>'); },
+            title: 'Small',
+            text: 'Small'
+        };
+
+        $.trumbowyg.btnsDef.medium = {
+            fn: function () { this.execCmd('insertHTML', false, '<span style="font-size: 16px;">' + this.range.text() + '</span>'); },
+            title: 'Medium',
+            text: 'Medium'
+        };
+
+        $.trumbowyg.btnsDef.large = {
+            fn: function () { this.execCmd('insertHTML', false, '<span style="font-size: 20px;">' + this.range.text() + '</span>'); },
+            title: 'Large',
+            text: 'Large'
+        };
+
+        $.trumbowyg.btnsDef.xlarge = {
+            fn: function () { this.execCmd('insertHTML', false, '<span style="font-size: 24px;">' + this.range.text() + '</span>'); },
+            title: 'Extra Large',
+            text: 'Extra Large'
+        };
+
+        // Initialize Trumbowyg with the font size dropdown
+        $('#editor').trumbowyg({
+            btns: [
+                ['viewHTML'],
+                ['undo', 'redo'],
+                ['formatting'],
+                ['fontSize'], // Custom dropdown
+                ['strong', 'em', 'underline'],
+                ['unorderedList', 'orderedList'],
+                ['link'],
+                ['removeformat'],
+                ['fullscreen']
+            ]
+        });
+    </script>
+</body>
+</html>
