@@ -1,19 +1,27 @@
 this.isLoading = true;
 
-// Function to fetch paginated data
+// Function to fetch paginated data dynamically
 const fetchPaginatedData = (baseUrl: string, limit: number) => {
   return this.http.get<any>(`${baseUrl}&limit=${limit}&offset=0`, { headers: this.headers }).pipe(
     switchMap((response) => {
-      const totalCount = response._totalCount; // Use total count from the first response
-      const requests = [];
+      const totalCount = response._totalCount; // Get total count
+      let allResults = [...response._results]; // Initialize with the first response's results
 
-      // Start at offset = limit for subsequent requests
+      const requests = [];
+      // Generate requests for additional pages starting at offset = limit
       for (let offset = limit; offset < totalCount; offset += limit) {
         requests.push(this.http.get<any>(`${baseUrl}&limit=${limit}&offset=${offset}`, { headers: this.headers }));
       }
 
-      // Combine the initial response and all subsequent requests
-      return forkJoin([of(response), ...requests]).pipe(map((results) => results.flatMap(res => res.results || res))); // Flatten all results
+      // Combine additional requests and concatenate their _results arrays
+      return forkJoin(requests).pipe(
+        map((responses) => {
+          responses.forEach((res) => {
+            allResults = allResults.concat(res._results); // Concatenate results from each response
+          });
+          return allResults; // Return the final concatenated results
+        })
+      );
     })
   );
 };
@@ -31,9 +39,9 @@ const getEpics = fetchPaginatedData(getEpicsUrl, 500); // Limit = 500
 // Perform forkJoin after all API calls are prepared
 forkJoin([getProjects, getProgramEpics, getEpics]).subscribe({
   next: ([projects, programEpics, epics]) => {
-    console.log('Projects:', projects);
-    console.log('Program Epics:', programEpics);
-    console.log('Epics:', epics);
+    console.log('Projects:', projects); // Final concatenated array of projects
+    console.log('Program Epics:', programEpics); // Final concatenated array of program epics
+    console.log('Epics:', epics); // Final concatenated array of epics
     this.isLoading = false;
 
     // Handle results here
