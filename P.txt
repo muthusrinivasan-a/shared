@@ -1,0 +1,23 @@
+mapped to fixVersions (releases). The summary should be concise, structured, and focused on what matters most to leadership—progress, risks, confidence level, and business impact.
+
+For Upcoming Releases:
+	•	Readiness Status: Number of planned epics and percentage of completion.
+	•	Risks & Dependencies: Any blockers, high-impact risks, or external dependencies.
+	•	Confidence Level: On-track vs. at-risk releases with reasons.
+	•	Major Features/Enhancements: Key deliverables executives should know.
+
+For Past Releases:
+	•	Delivery Summary: Number of epics completed vs. planned.
+	•	Challenges & Resolutions: Key issues faced and how they were mitigated.
+	•	Business Impact: How the delivered features contribute to business goals or improvements.
+
+Overall Trends & Insights:
+	•	Release Velocity: Are we improving or slowing down?
+	•	Recurring Risks: Patterns in delays, blockers, or scope changes.
+	•	Quality Metrics: Any indications of post-release issues or stability concerns.
+
+Ensure the summary is structured, data-driven, and insightful for decision-making at a glance. Below is the JIRA data for reference:”*
+
+{
+  "epicDetails": JSON.stringify(epicDetails),
+  "jiraReleases": JSON.stringify(this.project.custVzReleaseInfos_results)
