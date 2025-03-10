@@ -1,0 +1,119 @@
+<!-- week-calendar.component.html -->
+<div class="week-calendar-container">
+    <div class="calendar-header">
+      <button class="nav-button" (click)="prevWeek()">&lt;</button>
+      <h2>{{ formatMonth() }}</h2>
+      <button class="nav-button" (click)="nextWeek()">&gt;</button>
+    </div>
+    
+    <!-- Week days header -->
+    <div class="week-days-header">
+      <div class="time-gutter"></div>
+      <div 
+        *ngFor="let day of weekDays" 
+        class="week-day-header"
+        [ngClass]="{'today': day.isToday}"
+      >
+        {{ formatDate(day.date) }}
+      </div>
+    </div>
+    
+    <!-- All-day events section -->
+    <div class="all-day-container">
+      <div class="time-gutter">
+        <div class="all-day-label">All Day</div>
+      </div>
+      
+      <div class="all-day-grid">
+        <!-- For each day cell container -->
+        <div 
+          *ngFor="let day of weekDays; let dayIndex = index" 
+          class="all-day-cell-container"
+          [ngClass]="{'today': day.isToday}"
+        >
+          <!-- Only show first 3 all-day events -->
+          <ng-container *ngFor="let eventPos of day.allDayEvents | slice:0:3; let i = index">
+            <div 
+              class="all-day-event"
+              [ngClass]="{'event-continuation': !eventPos.isStart}"
+              [style.background-color]="eventPos.event.color || '#4285f4'"
+              [style.top.px]="eventPos.position * 28 + 4"
+              [style.height.px]="20"
+              [style.width]="(eventPos.isStart || (dayIndex % 7 === 0)) ? ('calc(' + (eventPos.colSpan * 100) + '% - 12px)') : 'calc(100% - 12px)'"
+              [title]="eventPos.event.eventTitle + (!eventPos.isStart ? ' (continued)' : '') + ': ' + eventPos.event.description"
+            >
+              <div class="event-title">
+                {{ eventPos.event.eventTitle }}
+                <span *ngIf="!eventPos.isStart"> (cont.)</span>
+              </div>
+            </div>
+          </ng-container>
+          
+          <!-- Show "view more" link if there are overflow events -->
+          <div 
+            *ngIf="(day.overflowCount ?? 0) > 0"
+            class="view-more"
+          >
+            <a href="javascript:void(0)" (click)="$event.preventDefault()">
+              +{{ day.overflowCount }} more
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Time grid -->
+    <div class="time-grid-container">
+      <!-- Time labels -->
+      <div class="time-gutter">
+        <div 
+          *ngFor="let timeSlot of timeSlots; let i = index" 
+          class="time-label"
+          [style.top.px]="getTimeSlotTop(i)"
+        >
+          {{ timeSlot }}
+        </div>
+      </div>
+      
+      <!-- Time grid -->
+      <div class="time-grid">
+        <!-- Hour lines -->
+        <div 
+          *ngFor="let timeSlot of timeSlots; let i = index" 
+          class="hour-line"
+          [style.top.px]="getTimeSlotTop(i)"
+        ></div>
+        
+        <!-- Half-hour lines for better granularity -->
+        <div 
+          *ngFor="let timeSlot of timeSlots; let i = index" 
+          class="half-hour-line"
+          [style.top.px]="getTimeSlotTop(i) + (hourHeight / 2)"
+        ></div>
+        
+        <!-- Day columns -->
+        <div class="day-columns">
+          <div 
+            *ngFor="let day of weekDays" 
+            class="day-column"
+            [ngClass]="{'today': day.isToday}"
+          >
+            <!-- Time-specific events -->
+            <div 
+              *ngFor="let eventPos of day.timeSlotEvents" 
+              class="time-event"
+              [style.background-color]="eventPos.event.color || '#4285f4'"
+              [style.top.px]="eventPos.top"
+              [style.height.px]="eventPos.height"
+              [style.width.%]="eventPos.width"
+              [style.left.%]="eventPos.left"
+              [title]="eventPos.event.eventTitle + ': ' + eventPos.event.description"
+            >
+              <div class="event-title">{{ eventPos.event.eventTitle }}</div>
+              <div class="event-time">{{ formatTime(eventPos.event.startDateTime) }} - {{ formatTime(eventPos.event.endDateTime) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

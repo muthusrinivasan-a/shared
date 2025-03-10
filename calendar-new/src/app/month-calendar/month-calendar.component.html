@@ -1,0 +1,88 @@
+<!-- calendar.component.html -->
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button class="nav-button" (click)="prevMonth()">&lt;</button>
+    <h2>
+      {{ getMonthName(currentDate.getMonth()) }} {{ currentDate.getFullYear() }}
+    </h2>
+    <button class="nav-button" (click)="nextMonth()">&gt;</button>
+  </div>
+
+  <div class="weekdays">
+    <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
+  </div>
+
+  <div class="calendar-grid">
+    <div
+      *ngFor="let day of calendarDays; let i = index"
+      class="calendar-day"
+      [ngClass]="{
+        'current-month': day.isCurrentMonth,
+        'other-month': !day.isCurrentMonth
+      }"
+    >
+      <div class="day-header">{{ day.date.getDate() }}</div>
+
+      <div class="events-container">
+        <!-- Only show first 3 events, considering position -->
+        <ng-container *ngFor="let dayEvent of day.dayEvents; let i = index">
+          <div
+            *ngIf="dayEvent.position < 3"
+            class="event"
+            [ngClass]="{
+              'multi-day-event': dayEvent.isMultiDay,
+              'single-day-event': !dayEvent.isMultiDay,
+              'event-continuation': !dayEvent.isStart
+            }"
+            [style.background-color]="dayEvent.event.color"
+            [style.top.px]="( dayEvent.position * 32 ) + 6"
+            [style.height.px]="24"
+            [style.width]="
+              dayEvent.isMultiDay
+                ? 'calc(' + dayEvent.daySpan * 100 + '% - ' + 12 + 'px)'
+                : ''
+            "
+            [style.z-index]="dayEvent.isMultiDay ? 10 : 5"
+            [style.border-left]="
+              !dayEvent.isStart ? '3px solid rgba(0,0,0,0.3)' : 'none'
+            "
+            [style.opacity]="dayEvent.isStart ? 1 : 0.85"
+            [title]="
+              dayEvent.event.eventTitle +
+              (!dayEvent.isStart ? ' (continued)' : '') +
+              ': ' +
+              dayEvent.event.description
+            "
+          >
+            <div class="event-title">
+              {{ dayEvent.event.eventTitle }}
+              <span *ngIf="!dayEvent.isStart"> (cont.)</span>
+            </div>
+            <div class="event-time">
+              <ng-container
+                *ngIf="dayEvent.event.isFullDayEvent; else timeRange"
+              >
+                All day
+              </ng-container>
+              <ng-template #timeRange>
+                {{ formatEventTime(dayEvent.event.startDateTime) }} -
+                {{ formatEventTime(dayEvent.event.endDateTime) }}
+              </ng-template>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Show "view more" link if there are overflow events -->
+        <div
+          *ngIf="(day.overflowCount ?? 0) > 0"
+          class="view-more"
+          [style.top.px]="3 * 35 + 4"
+        >
+          <a href="javascript:void(0)" (click)="$event.preventDefault()">
+            +{{ day.overflowCount }} more
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
